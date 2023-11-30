@@ -1,14 +1,14 @@
 import { LinearClient } from "@linear/sdk";
-import { Command, Option } from "commander";
+import { Command } from "commander";
 import { checkApiKey, renderProject, renderTeam, renderUser } from "..";
 
 export const listIssues = new Command("list")
 	.description("List issues")
-	.addOption(
-		new Option("-t, --team [teamId]", "Team ID to fetch issues from")
-	)
-	.addOption(
-		new Option("-s, --state [state]", "State to match when fetching issues")
+	.option("-t, --teamId <teamId>", "Issues' teamId")
+	.option("-s, --stateId <stateId>", "Issues' stateId")
+	.option(
+		"-S, --states <states>",
+		"Issues states' names to filter with (comma seperated)"
 	)
 	.action(async (options, cmd: Command) => {
 		if (cmd.parent === null) return;
@@ -27,30 +27,16 @@ export const listIssues = new Command("list")
 										id: { eq: options.teamId },
 								  }
 								: undefined,
-							state: options.state
+							state: options.stateId
 								? {
 										id: { eq: options.state },
 								  }
-								: {
-										name: {
-											nin: [
-												"Done",
-												"Canceled",
-												"Duplicate",
-											],
-										},
-								  },
+								: options.states
+								  ? { name: { in: options.states.split(",") } }
+								  : {},
 						},
 				  }
-				: {
-						filter: {
-							state: {
-								name: {
-									nin: ["Done", "Canceled", "Duplicate"],
-								},
-							},
-						},
-				  }
+				: {}
 		);
 		if (json) {
 			console.log(
