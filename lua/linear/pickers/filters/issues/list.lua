@@ -19,8 +19,9 @@ function ListIssuesFilterPicker:new()
 		},
 	}
 	local make_display = function(entry)
+		local icon = entry.entry.value == true and "✅" or "❌"
 		return displayer {
-			entry.entry.icon,
+			icon,
 			entry.entry.name,
 		}
 	end
@@ -28,17 +29,18 @@ function ListIssuesFilterPicker:new()
 	local OFFSET = -fzy.get_score_floor()
 	local results = {}
 	for key, value in pairs(options.filters.issues.states) do
-		table.insert(results, { icon = value == true and "" or "", value = value, name = key })
+		table.insert(results, { value = value, name = key })
 	end
 	pickers.new({}, {
 		prompt_title = "Filter: Issues",
 		finder = finders.new_table {
 			results = results,
 			entry_maker = function(entry)
+				local icon = entry.value == true and "✅" or "❌"
 				return {
-					value = entry.icon .. " " .. entry.name,
+					value = icon .. " " .. entry.name,
 					display = make_display,
-					ordinal = entry.icon .. " " .. entry.name,
+					ordinal = icon .. " " .. entry.name,
 					entry = entry,
 				}
 			end,
@@ -70,12 +72,15 @@ function ListIssuesFilterPicker:new()
 			end
 		},
 		attach_mappings = function(prompt_bufnr, map)
-			map('i', '<c-r>', function()
+			map({ 'i', 'n' }, '<c-r>', function()
 				actions.close(prompt_bufnr)
 				require('linear.command'):new("issues", "list"):run()
 			end)
 			actions.select_default:replace(function()
 				local selection = action_state.get_selected_entry()
+				if selection == nil then
+					return
+				end
 				if selection.entry.value == true then
 					selection.entry.value = false
 					options.filters.issues.states[selection.entry.name] = false
@@ -83,8 +88,15 @@ function ListIssuesFilterPicker:new()
 					selection.entry.value = true
 					options.filters.issues.states[selection.entry.name] = true
 				end
-				actions.move_selection_next(prompt_bufnr)
-				actions.move_selection_previous(prompt_bufnr)
+				action_state.get_current_picker(prompt_bufnr):refresh()
+				local timer = vim.loop.new_timer()
+				timer:start(1, 0, vim.schedule_wrap(function()
+					timer:stop()
+					timer:close()
+					action_state.get_current_picker(prompt_bufnr):move_selection(selection.index - 1)
+				end))
+				-- actions.move_selection_next(prompt_bufnr)
+				-- actions.move_selection_previous(prompt_bufnr)
 			end)
 			return true
 		end,
