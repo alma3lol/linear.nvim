@@ -1,6 +1,6 @@
 import { LinearClient } from "@linear/sdk";
 import { Command, Option } from "commander";
-import { checkApiKey, renderUser } from "..";
+import { checkApiKey, renderTeam, renderUser } from "..";
 
 export const listIssues = new Command("list")
 	.description("List issues")
@@ -31,20 +31,42 @@ export const listIssues = new Command("list")
 								? {
 										id: { eq: options.state },
 								  }
-								: undefined,
+								: {
+										name: {
+											nin: [
+												"Done",
+												"Canceled",
+												"Duplicate",
+											],
+										},
+								  },
 						},
 				  }
-				: {}
+				: {
+						filter: {
+							state: {
+								name: {
+									nin: ["Done", "Canceled", "Duplicate"],
+								},
+							},
+						},
+				  }
 		);
 		if (json) {
 			console.log(
 				JSON.stringify({
 					issues: await Promise.all(
 						issues.nodes.map(async (issue) => {
-							let state = "";
+							let state = undefined;
 							if (issue.state) {
 								const s = await issue.state;
-								state = s.name;
+								state = {
+									id: s.id,
+									name: s.name,
+									type: s.type,
+									color: s.color,
+									team: await renderTeam(s.team),
+								};
 							}
 							return {
 								id: issue.id,
