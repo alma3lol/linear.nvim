@@ -1,6 +1,6 @@
 import { LinearClient } from "@linear/sdk";
 import { Command, Option } from "commander";
-import { checkApiKey, renderTeam, renderUser } from "..";
+import { checkApiKey, renderProject, renderTeam, renderUser } from "..";
 
 export const listIssues = new Command("list")
 	.description("List issues")
@@ -68,11 +68,19 @@ export const listIssues = new Command("list")
 									team: await renderTeam(s.team),
 								};
 							}
+							const labels = await issue.labels();
 							return {
 								id: issue.id,
 								title: issue.title,
 								state,
 								assignee: await renderUser(issue.assignee),
+								priority: issue.priorityLabel,
+								project: await renderProject(issue.project),
+								labels: labels.nodes.map((label) => ({
+									id: label.id,
+									name: label.name,
+									color: label.color,
+								})),
 							};
 						})
 					),

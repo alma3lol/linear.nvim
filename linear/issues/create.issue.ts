@@ -33,6 +33,7 @@ export const createIssue = new Command("create")
 			console.error("Failed creating the issue");
 			process.exit(1);
 		}
+		const labels = await issue.labels();
 		if (json) {
 			console.log(
 				JSON.stringify({
@@ -42,6 +43,11 @@ export const createIssue = new Command("create")
 					assignee: await renderUser(issue.assignee),
 					priority: issue.priorityLabel,
 					project: await renderProject(issue.project),
+					labels: labels.nodes.map((label) => ({
+						id: label.id,
+						name: label.name,
+						color: label.color,
+					})),
 				})
 			);
 		}
