@@ -63,10 +63,6 @@ program.commands.forEach((cmd) => {
 		"Linear API key",
 		process.env.LINEAR_API_KEY
 	);
-	cmd.addOption(
-		new Option("--json", "Print in JSON format")
-			.default(process.env.LINEAR_JSON || false)
-			.choices(["true", "false"])
-	);
+	cmd.addOption(new Option("--json", "Print in JSON format"));
 });
 program.parse();
