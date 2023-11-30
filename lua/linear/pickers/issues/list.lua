@@ -72,7 +72,7 @@ function ListIssuesPicker:new(results)
 						}
 						if options.filters and options.filters.issues and options.filters.issues.states then
 							for key, value in pairs(options.filters.issues.states) do
-								table.insert(lines, " - " .. (value == true and "✅" or "❌") .. key)
+								table.insert(lines, " - " .. (value == true and "✅ " or "❌ ") .. key)
 							end
 						else
 							table.insert(lines, " - ✅ All")
