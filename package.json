@@ -1,0 +1,19 @@
+{
+  "name": "Linear.Nvim",
+  "version": "1.0.0",
+  "description": "Linear.app plugin for Neovim",
+  "repository": "https://github.com/alma3lol/linear.nvim",
+  "author": "Omar Almalol<omar.alma3lol@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "linear": "ts-node main.ts"
+  },
+  "dependencies": {
+    "@linear/sdk": "^12.0.0",
+    "@types/node": "^20.10.0",
+    "commander": "^11.1.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.2"
+  }
+}
