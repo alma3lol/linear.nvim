@@ -6,7 +6,7 @@ local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 local entry_display = require "telescope.pickers.entry_display"
 local options = require('linear').options
-local filters = require('linear.pickers.filters')
+local filters = require('linear.filters')
 local fzy = require "telescope.algos.fzy"
 
 local ListStatesPicker = {}

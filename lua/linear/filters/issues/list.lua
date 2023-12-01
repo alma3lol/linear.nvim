@@ -7,10 +7,10 @@ local action_state = require("telescope.actions.state")
 local entry_display = require "telescope.pickers.entry_display"
 local options = require('linear').options
 
-local ListIssuesFilterPicker = {}
-ListIssuesFilterPicker.__index = ListIssuesFilterPicker
+local ListIssuesFilter = {}
+ListIssuesFilter.__index = ListIssuesFilter
 
-function ListIssuesFilterPicker:new()
+function ListIssuesFilter:new()
 	local displayer = entry_display.create {
 		separator = " ",
 		items = {
@@ -121,4 +121,4 @@ function ListIssuesFilterPicker:new()
 	}):find()
 end
 
-return ListIssuesFilterPicker
+return ListIssuesFilter
