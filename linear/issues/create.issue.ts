@@ -39,6 +39,8 @@ export const createIssue = new Command("create")
 				JSON.stringify({
 					id: issue.id,
 					title: issue.title,
+					identifier: issue.identifier,
+					url: issue.url,
 					state: (await issue.state)?.name || "",
 					assignee: await renderUser(issue.assignee),
 					priority: issue.priorityLabel,

@@ -58,6 +58,8 @@ export const listIssues = new Command("list")
 							return {
 								id: issue.id,
 								title: issue.title,
+								identifier: issue.identifier,
+								url: issue.url,
 								state,
 								assignee: await renderUser(issue.assignee),
 								priority: issue.priorityLabel,
