@@ -1,6 +1,6 @@
 local Spinner = require('linear.spinner');
 local commands = require('linear.commands')
-local viewers = require('linear.viewers')
+local pickers = require('linear.pickers')
 
 local Command = {}
 Command.__index = Command
@@ -67,7 +67,16 @@ function Command:success(data)
 	self.spinner:stop()
 	vim.notify("Done", vim.log.levels.INFO, { title = "Linear.nvim", replace = { id = self.id }, icon = "✓" })
 	if (data ~= nil and data[self.cmd] ~= nil) then
-		viewers[self.cmd][self.sub_cmd]:new(data[self.cmd], self.cb)
+		local results = {}
+		if self.sub_cmd == "list" then
+			if self.cmd ~= "teams" then
+				table.insert(results, { id = "FILTER", title = "Filter", name = "Filter" })
+			end
+		end
+		for _, entry in ipairs(data[self.cmd]) do
+			table.insert(results, entry)
+		end
+		pickers[self.cmd][self.sub_cmd]:new(results, self.cb)
 	end
 end
 
