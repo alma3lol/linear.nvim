@@ -73,6 +73,12 @@ function ListStatesPicker:new(results)
 						"Team: " .. (entry.entry.team and entry.entry.team.name or "No team"),
 					}
 					vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
+					if entry.entry.team then
+						local name = entry.entry.team.name:gsub("%s+", ""):gsub("-", "")
+						vim.api.nvim_set_hl(0, "Team" .. name, { fg = entry.entry.team.color, bold = true })
+						vim.api.nvim_buf_add_highlight(self.state.bufnr, ns_id, "Team" .. name, 3, 6,
+							#entry.entry.team.name + 6)
+					end
 					vim.api.nvim_buf_add_highlight(self.state.bufnr, ns_id,
 						"IssuesState" .. entry.entry.name:gsub("%s+", ""), 1, 6, #entry.entry.name + 6)
 				end)
