@@ -1,15 +1,12 @@
 import { LinearClient } from "@linear/sdk";
-import { Command, Option } from "commander";
+import { Command } from "commander";
 import { checkApiKey } from "..";
 
 export const listStates = new Command("list")
 	.description("List states")
-	.addOption(
-		new Option("-t, --team [teamId]", "Team ID to fetch states from")
-	)
-	.addOption(
-		new Option("-s, --state [state]", "State to match when fetching states")
-	)
+	.option("-t, --teamId <teamId>", "State's teamId")
+	.option("-n, --name <name>", "State's name")
+	.option("-T, --types <types>", "State's types (comma seperated)")
 	.action(async (options, cmd: Command) => {
 		if (cmd.parent === null) return;
 		const apiKey = cmd.parent.getOptionValue("apiKey");
@@ -27,9 +24,16 @@ export const listStates = new Command("list")
 										id: { eq: options.teamId },
 								  }
 								: undefined,
-							type: options.type
+							name: options.name
 								? {
-										eq: options.state,
+										eq: options.name,
+								  }
+								: undefined,
+							type: options.types
+								? {
+										in: options.types
+											.split(",")
+											.map((type: string) => type.trim()),
 								  }
 								: undefined,
 						},
