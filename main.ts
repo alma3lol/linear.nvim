@@ -1,5 +1,6 @@
 import { Command, Option } from "commander";
 import {
+	createIssue,
 	createLabel,
 	createMilestone,
 	createProject,
@@ -20,7 +21,7 @@ program
 	.command("issues")
 	.description("Manage issues")
 	.addCommand(listIssues)
-	.addCommand(createState);
+	.addCommand(createIssue);
 
 program
 	.command("states")
