@@ -34,6 +34,15 @@ M.defaults = function()
 					["Canceled"] = false,
 					["Duplicate"] = false,
 				}
+			},
+			states = {
+				types = {
+					["backlog"] = true,
+					["unstarted"] = true,
+					["started"] = true,
+					["completed"] = true,
+					["canceled"] = true,
+				}
 			}
 		}
 	}
