@@ -107,7 +107,7 @@ function ListStatesPicker:new(results)
 				if selection.entry.id == "FILTER" then
 					filters.states.list:new()
 				else
-					-- TODO: SHOW UPDATE ISSUE PICKER
+					-- TODO: SHOW UPDATE STATE PICKER
 					print(vim.inspect(selection))
 				end
 			end)
