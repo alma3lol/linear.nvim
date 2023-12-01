@@ -13,6 +13,7 @@ end, {
 			"labels",
 			"teams",
 			"states",
+			"users",
 		}
 		table.sort(cmds)
 		if now == 0 then
@@ -29,8 +30,10 @@ end, {
 			}
 			table.sort(sub_cmds)
 			return vim.tbl_filter(function(cmd)
-				if args[2] == "priorities" and cmd ~= "list" then
-					return false
+				if args[2] == "priorities" or args[2] == "users" then
+					if cmd ~= "list" then
+						return false
+					end
 				end
 				return vim.startswith(cmd, args[3])
 			end, sub_cmds)
