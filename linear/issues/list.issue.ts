@@ -32,7 +32,15 @@ export const listIssues = new Command("list")
 										id: { eq: options.state },
 								  }
 								: options.states
-								  ? { name: { in: options.states.split(",") } }
+								  ? {
+											name: {
+												in: options.states
+													.split(",")
+													.map((state: string) =>
+														state.trim()
+													),
+											},
+								    }
 								  : {},
 						},
 				  }
