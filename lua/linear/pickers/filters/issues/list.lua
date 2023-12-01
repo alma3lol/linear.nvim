@@ -101,6 +101,10 @@ function ListIssuesFilterPicker:new()
 						selection.entry.value = true
 						options.filters.issues.states[selection.entry.name] = true
 					end
+					if selection.index == 1 then
+						actions.move_selection_next(prompt_bufnr)
+						actions.move_selection_previous(prompt_bufnr)
+					end
 				end
 				picker:refresh()
 				if selection ~= nil then
