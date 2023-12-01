@@ -76,27 +76,41 @@ function ListIssuesFilterPicker:new()
 				actions.close(prompt_bufnr)
 				require('linear.command'):new("issues", "list"):run()
 			end)
+			local picker = action_state.get_current_picker(prompt_bufnr)
 			actions.select_default:replace(function()
+				local selected_entries = picker:get_multi_selection()
 				local selection = action_state.get_selected_entry()
-				if selection == nil then
-					return
-				end
-				if selection.entry.value == true then
-					selection.entry.value = false
-					options.filters.issues.states[selection.entry.name] = false
+				if #selected_entries > 0 then
+					for _, entry in ipairs(selected_entries) do
+						if entry.entry.value == true then
+							entry.entry.value = false
+							options.filters.issues.states[entry.entry.name] = false
+						else
+							entry.entry.value = true
+							options.filters.issues.states[entry.entry.name] = true
+						end
+					end
 				else
-					selection.entry.value = true
-					options.filters.issues.states[selection.entry.name] = true
+					if selection == nil then
+						return
+					end
+					if selection.entry.value == true then
+						selection.entry.value = false
+						options.filters.issues.states[selection.entry.name] = false
+					else
+						selection.entry.value = true
+						options.filters.issues.states[selection.entry.name] = true
+					end
 				end
-				action_state.get_current_picker(prompt_bufnr):refresh()
-				local timer = vim.loop.new_timer()
-				timer:start(1, 0, vim.schedule_wrap(function()
-					timer:stop()
-					timer:close()
-					action_state.get_current_picker(prompt_bufnr):move_selection(selection.index - 1)
-				end))
-				-- actions.move_selection_next(prompt_bufnr)
-				-- actions.move_selection_previous(prompt_bufnr)
+				picker:refresh()
+				if selection ~= nil then
+					local timer = vim.loop.new_timer()
+					timer:start(1, 0, vim.schedule_wrap(function()
+						timer:stop()
+						timer:close()
+						picker:move_selection(selection.index - 1)
+					end))
+				end
 			end)
 			return true
 		end,
