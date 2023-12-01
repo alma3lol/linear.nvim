@@ -5,10 +5,11 @@ local viewers = require('linear.viewers')
 local Command = {}
 Command.__index = Command
 
-function Command:new(cmd, sub_cmd)
+function Command:new(cmd, sub_cmd, cb)
 	self = setmetatable({}, Command)
 	self.cmd = cmd
 	self.sub_cmd = sub_cmd
+	self.cb = cb
 	self.id = nil
 	local texts = {
 		issues = {
@@ -22,6 +23,12 @@ function Command:new(cmd, sub_cmd)
 			list = "Fetching states...",
 			update = "Updating a state..",
 			delete = "Deleting a state..",
+		},
+		teams = {
+			create = "Creating a team...",
+			list = "Fetching teams...",
+			update = "Updating a team..",
+			delete = "Deleting a team..",
 		},
 	}
 	self.text = texts[cmd][sub_cmd]
@@ -40,27 +47,33 @@ function Command:new(cmd, sub_cmd)
 	return self
 end
 
-function Command:run()
+function Command:show_spinner()
 	local ok, result = pcall(vim.notify, self.text, vim.log.levels.INFO,
 		{ title = "Linear.nvim", icon = self.spinner:to_string() })
 	if ok and result ~= nil then
 		self.id = result.id
 		self.spinner:start()
-		self.command:run()
 	end
+end
+
+function Command:run()
+	if self.sub_cmd == "list" then
+		self:show_spinner()
+	end
+	self.command:run()
 end
 
 function Command:success(data)
 	self.spinner:stop()
 	vim.notify("Done", vim.log.levels.INFO, { title = "Linear.nvim", replace = { id = self.id }, icon = "✓" })
 	if (data ~= nil and data[self.cmd] ~= nil) then
-		viewers[self.cmd][self.sub_cmd]:new(data[self.cmd])
+		viewers[self.cmd][self.sub_cmd]:new(data[self.cmd], self.cb)
 	end
 end
 
 function Command:failed()
 	self.spinner:stop()
-	vim.notify("Failed", vim.log.levels.ERROR, { title = "Linear.nvim", replace = { id = self.id }, icon = "❗" })
+	vim.notify(self.text, vim.log.levels.ERROR, { title = "Linear.nvim", replace = { id = self.id }, icon = "" })
 end
 
 return Command

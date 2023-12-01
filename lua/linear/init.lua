@@ -79,8 +79,7 @@ M.setup = function(options)
 end
 
 M.command = function(opts)
-	local cmd = require('linear.command'):new(opts.fargs[1], opts.fargs[2])
-	cmd:run()
+	require('linear.command'):new(opts.fargs[1], opts.fargs[2]):run()
 end
 
 return M

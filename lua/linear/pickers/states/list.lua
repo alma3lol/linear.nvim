@@ -7,11 +7,12 @@ local action_state = require("telescope.actions.state")
 local entry_display = require "telescope.pickers.entry_display"
 local options = require('linear').options
 local filters = require('linear.pickers.filters')
+local fzy = require "telescope.algos.fzy"
 
 local ListStatesPicker = {}
 ListStatesPicker.__index = ListStatesPicker
 
-function ListStatesPicker:new(results)
+function ListStatesPicker:finder(results)
 	local displayer = entry_display.create {
 		separator = " ",
 		items = {
@@ -27,93 +28,114 @@ function ListStatesPicker:new(results)
 			entry.entry.name,
 		}
 	end
-	local fzy = require "telescope.algos.fzy"
-	local OFFSET = -fzy.get_score_floor()
-	local ns_id = vim.api.nvim_create_namespace("LinearApp")
-	pickers.new({}, {
-		prompt_title = "States",
-		finder = finders.new_table {
-			results = results,
-			entry_maker = function(entry)
-				return {
-					value = entry.id .. " " .. entry.name,
-					display = make_display,
-					ordinal = entry.id .. " " .. entry.name,
-					entry = entry,
-				}
-			end,
-		},
-		sorter = sorters.new {
-			discard = true,
-			scoring_function = function(_, prompt, _, entry)
-				if entry.entry.id == "FILTER" then
-					return 0
-				end
-				if not fzy.has_match(prompt, entry.entry.name) then
-					return -1
-				end
-				local fzy_score = fzy.score(prompt, entry.entry.name)
-				if fzy_score == fzy.get_score_min() then
-					return 1
-				end
-				return 1 / (fzy_score + OFFSET)
-			end,
-			highlighter = function(_, prompt, display)
-				return fzy.positions(prompt, display)
-			end,
-		},
-		previewer = previewers.new_buffer_previewer {
-			define_preview = function(self, entry)
-				vim.api.nvim_buf_call(self.state.bufnr, function()
-					if entry.entry.id == "FILTER" then
-						local lines = {
-							"Type: "
-						}
-						if options.filters and options.filters.states and options.filters.states.types then
-							for key, value in pairs(options.filters.states.types) do
-								table.insert(lines,
-									" - " .. (value == true and "✅ " or "❌ ") .. key:sub(1, 1):upper() .. key:sub(2))
-							end
-						else
-							table.insert(lines, " - ✅ All")
-						end
-						vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
-						return
-					end
-					vim.api.nvim_set_hl(0, "IssuesState" .. entry.entry.name:gsub("%s+", ""),
-						{ fg = entry.entry.color, bold = true })
-					local lines = {
-						"ID: " .. entry.entry.id,
-						"Name: " .. entry.entry.name,
-						"Type: " .. entry.entry.type:sub(1, 1):upper() .. entry.entry.type:sub(2),
-						"Team: " .. (entry.entry.team and entry.entry.team.name or "No team"),
-					}
-					vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
-					if entry.entry.team then
-						local name = entry.entry.team.name:gsub("%s+", ""):gsub("-", "")
-						vim.api.nvim_set_hl(0, "Team" .. name, { fg = entry.entry.team.color, bold = true })
-						vim.api.nvim_buf_add_highlight(self.state.bufnr, ns_id, "Team" .. name, 3, 6,
-							#entry.entry.team.name + 6)
-					end
-					vim.api.nvim_buf_add_highlight(self.state.bufnr, ns_id,
-						"IssuesState" .. entry.entry.name:gsub("%s+", ""), 1, 6, #entry.entry.name + 6)
-				end)
-			end
-		},
-		attach_mappings = function(prompt_bufnr, map)
-			map({ 'i', 'n' }, '<CR>', function()
-				actions.close(prompt_bufnr)
-				local selection = action_state.get_selected_entry()
-				if selection.entry.id == "FILTER" then
-					filters.states.list:new()
-				else
-					-- TODO: SHOW UPDATE STATE PICKER
-					print(vim.inspect(selection))
-				end
-			end)
-			return true
+	return finders.new_table {
+		results = results,
+		entry_maker = function(entry)
+			return {
+				value = entry.id .. " " .. entry.name,
+				display = make_display,
+				ordinal = entry.id .. " " .. entry.name,
+				entry = entry,
+			}
 		end,
-	}):find()
+	}
+end
+
+function ListStatesPicker:sorter()
+	local OFFSET = -fzy.get_score_floor()
+	return sorters.new {
+		discard = true,
+		scoring_function = function(_, prompt, _, entry)
+			if entry.entry.id == "FILTER" then
+				return 0
+			end
+			if not fzy.has_match(prompt, entry.entry.name) then
+				return -1
+			end
+			local fzy_score = fzy.score(prompt, entry.entry.name)
+			if fzy_score == fzy.get_score_min() then
+				return 1
+			end
+			return 1 / (fzy_score + OFFSET)
+		end,
+		highlighter = function(_, prompt, display)
+			return fzy.positions(prompt, display)
+		end,
+	}
+end
+
+function ListStatesPicker:previewer()
+	local ns_id = vim.api.nvim_create_namespace("LinearApp")
+	return previewers.new_buffer_previewer {
+		define_preview = function(self, entry)
+			vim.api.nvim_buf_call(self.state.bufnr, function()
+				if entry.entry.id == "FILTER" then
+					local lines = {
+						"Type: "
+					}
+					if options.filters and options.filters.states and options.filters.states.types then
+						for key, value in pairs(options.filters.states.types) do
+							table.insert(lines,
+								" - " .. (value == true and "✅ " or "❌ ") .. key:sub(1, 1):upper() .. key:sub(2))
+						end
+					else
+						table.insert(lines, " - ✅ All")
+					end
+					vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
+					return
+				end
+				vim.api.nvim_set_hl(0, "IssuesState" .. entry.entry.name:gsub("%s+", ""),
+					{ fg = entry.entry.color, bold = true })
+				local lines = {
+					"ID: " .. entry.entry.id,
+					"Name: " .. entry.entry.name,
+					"Type: " .. entry.entry.type:sub(1, 1):upper() .. entry.entry.type:sub(2),
+					"Team: " .. (entry.entry.team and entry.entry.team.name or "No team"),
+				}
+				vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
+				if entry.entry.team then
+					local name = entry.entry.team.name:gsub("%s+", ""):gsub("-", "")
+					vim.api.nvim_set_hl(0, "Team" .. name, { fg = entry.entry.team.color, bold = true })
+					vim.api.nvim_buf_add_highlight(self.state.bufnr, ns_id, "Team" .. name, 3, 6,
+						#entry.entry.team.name + 6)
+				end
+				vim.api.nvim_buf_add_highlight(self.state.bufnr, ns_id,
+					"IssuesState" .. entry.entry.name:gsub("%s+", ""), 1, 6, #entry.entry.name + 6)
+			end)
+		end
+	}
+end
+
+function ListStatesPicker:attach_mappings(cb)
+	return function(prompt_bufnr, map)
+		map({ 'i', 'n' }, '<CR>', function()
+			actions.close(prompt_bufnr)
+			local selection = action_state.get_selected_entry()
+			if selection.entry.id == "FILTER" then
+				filters.states.list:new()
+			else
+				-- TODO: SHOW UPDATE STATE PICKER
+				cb(selection.entry)
+				print(vim.inspect(selection))
+			end
+		end)
+		return true
+	end
+end
+
+function ListStatesPicker:picker(results, cb)
+	print(vim.inspect(cb))
+	return pickers.new({}, {
+		prompt_title = "States",
+		finder = ListStatesPicker:finder(results),
+		sorter = ListStatesPicker:sorter(),
+		previewer = ListStatesPicker:previewer(),
+		attach_mappings = ListStatesPicker:attach_mappings(cb),
+	})
+end
+
+function ListStatesPicker:new(results, cb)
+	self:picker(results, cb):find()
 end
 
 return ListStatesPicker
