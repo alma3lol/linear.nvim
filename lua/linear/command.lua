@@ -17,6 +17,12 @@ function Command:new(cmd, sub_cmd)
 			update = "Updating an issue..",
 			delete = "Deleting an issue..",
 		},
+		states = {
+			create = "Creating a state...",
+			list = "Fetching states...",
+			update = "Updating a state..",
+			delete = "Deleting a state..",
+		},
 	}
 	self.text = texts[cmd][sub_cmd]
 	self.command = commands[cmd][sub_cmd]:new(self)
