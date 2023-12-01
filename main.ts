@@ -13,6 +13,7 @@ import {
 	listProjects,
 	listStates,
 	listTeams,
+	listUsers,
 } from "./linear";
 
 const program = new Command();
@@ -57,6 +58,8 @@ program
 	.description("Manage milestones")
 	.addCommand(listMilestones)
 	.addCommand(createMilestone);
+
+program.command("users").description("Manage users").addCommand(listUsers);
 
 program.commands.forEach((cmd) => {
 	cmd.requiredOption(

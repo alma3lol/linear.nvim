@@ -6,3 +6,4 @@ export * from "./priorities";
 export * from "./utils";
 export * from "./labels";
 export * from "./milestones";
+export * from "./users";
