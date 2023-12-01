@@ -6,6 +6,7 @@ local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 local entry_display = require "telescope.pickers.entry_display"
 local options = require('linear').options
+local filters = require('linear.pickers.filters')
 
 local ListStatesPicker = {}
 ListStatesPicker.__index = ListStatesPicker
@@ -64,6 +65,21 @@ function ListStatesPicker:new(results)
 		previewer = previewers.new_buffer_previewer {
 			define_preview = function(self, entry)
 				vim.api.nvim_buf_call(self.state.bufnr, function()
+					if entry.entry.id == "FILTER" then
+						local lines = {
+							"Type: "
+						}
+						if options.filters and options.filters.states and options.filters.states.types then
+							for key, value in pairs(options.filters.states.types) do
+								table.insert(lines,
+									" - " .. (value == true and "✅ " or "❌ ") .. key:sub(1, 1):upper() .. key:sub(2))
+							end
+						else
+							table.insert(lines, " - ✅ All")
+						end
+						vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
+						return
+					end
 					vim.api.nvim_set_hl(0, "IssuesState" .. entry.entry.name:gsub("%s+", ""),
 						{ fg = entry.entry.color, bold = true })
 					local lines = {
@@ -88,7 +104,12 @@ function ListStatesPicker:new(results)
 			map({ 'i', 'n' }, '<CR>', function()
 				actions.close(prompt_bufnr)
 				local selection = action_state.get_selected_entry()
-				print(vim.inspect(selection))
+				if selection.entry.id == "FILTER" then
+					filters.states.list:new()
+				else
+					-- TODO: SHOW UPDATE ISSUE PICKER
+					print(vim.inspect(selection))
+				end
 			end)
 			return true
 		end,

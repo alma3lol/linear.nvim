@@ -4,7 +4,16 @@ local ListStatesViewer = {}
 ListStatesViewer.__index = ListStatesViewer
 
 function ListStatesViewer:new(states)
-	pickers.states.list:new(states)
+	local results = {
+		{
+			id = "FILTER",
+			name = "Filter"
+		}
+	}
+	for _, state in pairs(states) do
+		table.insert(results, state)
+	end
+	pickers.states.list:new(results)
 end
 
 return ListStatesViewer
