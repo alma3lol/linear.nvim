@@ -8,6 +8,9 @@ M.defaults = function()
 	return {
 		api_key_cmd = nil,
 		api_key = nil,
+		yank_register = "+",
+		magic_words = "closes",
+		magic_words_parenthesis = true,
 		icons = {
 			states = {
 				["Backlog"] = "📦",

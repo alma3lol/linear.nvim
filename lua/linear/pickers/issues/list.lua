@@ -107,13 +107,35 @@ function ListIssuesPicker:new(results)
 				end)
 			end
 		},
-		attach_mappings = function(prompt_bufnr)
-			actions.select_default:replace(function()
+		attach_mappings = function(prompt_bufnr, map)
+			map({ 'i', 'n' }, '<c-m>', function()
+				local picker = action_state.get_current_picker(prompt_bufnr)
+				local selected_entries = picker:get_multi_selection()
+				if #selected_entries > 0 then
+					local magic_words = (options.magic_words or "closes") .. " "
+					local identifiers = {}
+					for _, entry in ipairs(selected_entries) do
+						table.insert(identifiers, entry.entry.identifier)
+					end
+					magic_words = magic_words .. table.concat(identifiers, ", ")
+					if options.magic_words_parenthesis then
+						magic_words = "(" .. magic_words .. ")"
+					end
+					vim.fn.setreg(options.yank_register or "", magic_words)
+					vim.notify("Magic words copied to register (" .. (options.yank_register or '"') .. ")",
+						vim.log.levels.INFO, { title = "Linear.nvim" })
+				else
+					vim.notify("Can't use magic words without entries",
+						vim.log.levels.WARN, { title = "Linear.nvim" })
+				end
+			end)
+			map({ 'i', 'n' }, '<CR>', function()
 				actions.close(prompt_bufnr)
 				local selection = action_state.get_selected_entry()
 				if selection.entry.id == "FILTER" then
 					filters.issues.list:new()
 				else
+					-- TODO: SHOW UPDATE ISSUE PICKER
 					print(vim.inspect(selection))
 				end
 			end)
