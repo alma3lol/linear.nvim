@@ -89,7 +89,9 @@ function ListTeamsPicker:attach_mappings(cb)
 		map({ 'i', 'n' }, '<CR>', function()
 			actions.close(prompt_bufnr)
 			local selection = action_state.get_selected_entry()
-			cb(selection.entry)
+			if type(cb) == "function" then
+				cb(selection.entry)
+			end
 			print(vim.inspect(selection))
 		end)
 		return true
