@@ -1,6 +1,6 @@
 import { LinearClient } from "@linear/sdk";
 import { Command, Option } from "commander";
-import { checkApiKey } from "..";
+import { checkApiKey, renderTeam } from "..";
 
 export const createState = new Command("create")
 	.requiredOption("-t, --team <teamId>", "Team ID to create state in")
@@ -45,7 +45,7 @@ export const createState = new Command("create")
 					name: state.name,
 					type: state.type,
 					color: state.color,
-					team: (await state.team)?.name || "",
+					team: await renderTeam(state.team),
 				})
 			);
 		}

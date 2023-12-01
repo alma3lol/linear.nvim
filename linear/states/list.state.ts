@@ -1,6 +1,6 @@
 import { LinearClient } from "@linear/sdk";
 import { Command } from "commander";
-import { checkApiKey } from "..";
+import { checkApiKey, renderTeam } from "..";
 
 export const listStates = new Command("list")
 	.description("List states")
@@ -49,7 +49,7 @@ export const listStates = new Command("list")
 							name: state.name,
 							type: state.type,
 							color: state.color,
-							team: (await state.team)?.name || "",
+							team: await renderTeam(state.team),
 						}))
 					),
 				})
