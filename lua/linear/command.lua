@@ -89,6 +89,9 @@ end
 function Command:failed()
 	self.spinner:stop()
 	vim.notify(self.text, vim.log.levels.ERROR, { title = "Linear.nvim", replace = { id = self.id }, icon = "" })
+	if type(self.cb) == "function" then
+		self.cb()
+	end
 end
 
 return Command

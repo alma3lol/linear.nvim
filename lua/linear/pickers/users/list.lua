@@ -61,7 +61,6 @@ function ListUsersPicker:sorter()
 end
 
 function ListUsersPicker:previewer()
-	local ns_id = vim.api.nvim_create_namespace("LinearApp")
 	return previewers.new_buffer_previewer {
 		define_preview = function(self, entry)
 			vim.api.nvim_buf_call(self.state.bufnr, function()
