@@ -81,7 +81,7 @@ Once you obtained your key, you have two options to supply it to the plugin:
 -   Option one, using `api_key` in [configuration](#configuration):
 
 ```lua
-# configuration
+-- configuration
 {
 	api_key = "...",
 	...
@@ -101,12 +101,17 @@ Once you obtained your key, you have two options to supply it to the plugin:
 
 The plugin is fairly customizable with configuration. However, apart from `api_key` or `api_key_cmd`, no other configuration is required.
 
-Default configuration is:
+Default configuration:
 
 ```lua
 {
 	api_key_cmd = nil,
 	api_key = nil,
+	magic_words = {
+		yank_register = "+",
+		prefix = "closes",
+		parenthesis = true,
+	},
 	icons = {
 		states = {
 			["Backlog"] = "📦",
@@ -139,6 +144,26 @@ The plugin creates `Linear ... ...` command which takes two arguments, the class
 
 For example:
 
-```vim
+```zsh
 Linear issues list
+Linear projects create
+Linear teams delete
+Linear labels update
 ```
+
+## Features
+
+Along side managing all classes of Linear, the plugin provides some useful features including:
+
+-   Copying magic words to a register
+-   Post-commit check of issues' status and notify upon status change
+
+## Bindings
+
+Each picker has custom bindings to execute related actions.  
+The following is a list of defined bindings:
+
+-   Issues' list picker:
+    -   `Ctrl+m`: generate & copy magic words with the selected issues
+-   Issues' list fitler:
+    -   `Ctrl+r`: refresh issues list
