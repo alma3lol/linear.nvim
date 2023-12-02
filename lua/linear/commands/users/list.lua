@@ -23,7 +23,7 @@ function ListUsersCommand:run()
         local users = vim.json.decode(table.concat(j:result(), ""))
         self.parent_cmd:success(users)
       else
-        self.parent_cmd.text = "Failed to fetch issues"
+        self.parent_cmd.text = "Failed to fetch users"
         self.parent_cmd:failed()
       end
     end),

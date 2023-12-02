@@ -23,7 +23,7 @@ function ListTeamsCommand:run()
         local teams = vim.json.decode(table.concat(j:result(), ""))
         self.parent_cmd:success(teams)
       else
-        self.parent_cmd.text = "Failed to fetch issues"
+        self.parent_cmd.text = "Failed to fetch teams"
         self.parent_cmd:failed()
       end
     end),

@@ -37,7 +37,7 @@ function ListStatesCommand:run()
         local states = vim.json.decode(table.concat(j:result(), ""))
         self.parent_cmd:success(states)
       else
-        self.parent_cmd.text = "Failed to fetch issues"
+        self.parent_cmd.text = "Failed to fetch states"
         self.parent_cmd:failed()
       end
     end),
