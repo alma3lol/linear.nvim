@@ -4,6 +4,7 @@ local M = {
 	teams = require('linear.commands.teams'),
 	users = require('linear.commands.users'),
 	projects = require('linear.commands.projects'),
+	labels = require('linear.commands.labels'),
 }
 
 return M
