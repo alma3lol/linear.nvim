@@ -54,6 +54,12 @@ function Command:new(cmd, sub_cmd, args)
 			update = "Updating a priority..",
 			delete = "Deleting a priority..",
 		},
+		milestones = {
+			create = "Creating a milestone...",
+			list = "Fetching milestones...",
+			update = "Updating a milestone..",
+			delete = "Deleting a milestone..",
+		},
 	}
 	self.text = texts[cmd][sub_cmd]
 	self.command = commands[cmd][sub_cmd]:new(self)

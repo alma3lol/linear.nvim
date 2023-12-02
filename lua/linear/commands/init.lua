@@ -6,6 +6,7 @@ local M = {
 	projects = require('linear.commands.projects'),
 	labels = require('linear.commands.labels'),
 	priorities = require('linear.commands.priorities'),
+	milestones = require('linear.commands.milestones'),
 }
 
 return M
