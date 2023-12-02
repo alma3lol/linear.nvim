@@ -20,43 +20,63 @@ export const createIssue = new Command("create")
 		const client = new LinearClient({
 			apiKey,
 		});
-		const result = await client.createIssue({
-			teamId: options.teamId,
-			title: options.title,
-			stateId: options.stateId,
-			assigneeId: options.assigneeId,
-			priority: options.priority,
-			projectId: options.projectId,
-			projectMilestoneId: options.milestoneId,
-			labelIds: options.labelIds
-				? options.labelIds
-						.split(",")
-						.map((labelId: string) => labelId.trim())
-				: undefined,
-		});
-		const issue = await result.issue;
-		if (!result.success || !issue) {
-			console.error("Failed creating the issue");
+		try {
+			let priority = undefined;
+			if (!Number.isNaN(parseInt(options.priority)))
+				priority = parseInt(options.priority);
+			const result = await client.createIssue({
+				teamId: options.teamId,
+				title: options.title,
+				stateId: options.stateId,
+				assigneeId: options.assigneeId,
+				priority,
+				projectId: options.projectId,
+				projectMilestoneId: options.milestoneId,
+				labelIds: options.labelIds
+					? options.labelIds
+							.split(",")
+							.map((labelId: string) => labelId.trim())
+					: undefined,
+			});
+			const issue = await result.issue;
+			if (!result.success || !issue) {
+				if (json) {
+					console.log(
+						JSON.stringify({
+							options,
+						})
+					);
+				} else {
+					console.error("Failed creating the issue");
+				}
+				process.exit(1);
+			}
+			const labels = await issue.labels();
+			if (json) {
+				console.log(
+					JSON.stringify({
+						id: issue.id,
+						title: issue.title,
+						identifier: issue.identifier,
+						url: issue.url,
+						state: (await issue.state)?.name || "",
+						assignee: await renderUser(issue.assignee),
+						priority: issue.priorityLabel,
+						project: await renderProject(issue.project),
+						labels: labels.nodes.map((label) => ({
+							id: label.id,
+							name: label.name,
+							color: label.color,
+						})),
+					})
+				);
+			}
+		} catch (error) {
+			if (json) {
+				console.log(JSON.stringify({ error }));
+			} else {
+				console.log({ error });
+			}
 			process.exit(1);
-		}
-		const labels = await issue.labels();
-		if (json) {
-			console.log(
-				JSON.stringify({
-					id: issue.id,
-					title: issue.title,
-					identifier: issue.identifier,
-					url: issue.url,
-					state: (await issue.state)?.name || "",
-					assignee: await renderUser(issue.assignee),
-					priority: issue.priorityLabel,
-					project: await renderProject(issue.project),
-					labels: labels.nodes.map((label) => ({
-						id: label.id,
-						name: label.name,
-						color: label.color,
-					})),
-				})
-			);
 		}
 	});
