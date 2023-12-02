@@ -5,6 +5,7 @@ local M = {
 	users = require('linear.pickers.users'),
 	projects = require('linear.pickers.projects'),
 	labels = require('linear.pickers.labels'),
+	priorities = require('linear.pickers.priorities'),
 }
 
 return M
