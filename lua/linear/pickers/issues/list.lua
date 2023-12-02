@@ -125,8 +125,20 @@ function ListIssuesPicker:new(results)
 					vim.notify("Magic words copied to register (" .. (options.yank_register or '"') .. ")",
 						vim.log.levels.INFO, { title = "Linear.nvim" })
 				else
-					vim.notify("Can't use magic words without entries",
-						vim.log.levels.WARN, { title = "Linear.nvim" })
+					local selection = action_state.get_selected_entry()
+					if selection == nil or selection.entry.id == "FILTER" then
+						vim.notify("Can't use magic words without entries",
+							vim.log.levels.WARN, { title = "Linear.nvim" })
+						return
+					end
+					local magic_words = (options.magic_words.prefix or "closes") .. " "
+					magic_words = magic_words .. selection.entry.identifier
+					if options.magic_words.parenthesis then
+						magic_words = "(" .. magic_words .. ")"
+					end
+					vim.fn.setreg(options.magic_words.yank_register or "", magic_words)
+					vim.notify("Magic words copied to register (" .. (options.yank_register or '"') .. ")",
+						vim.log.levels.INFO, { title = "Linear.nvim" })
 				end
 			end)
 			map({ 'i', 'n' }, '<CR>', function()
