@@ -5,7 +5,6 @@ local previewers = require("telescope.previewers")
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 local entry_display = require "telescope.pickers.entry_display"
-local options = require('linear').options
 local fzy = require "telescope.algos.fzy"
 
 local ListTeamsPicker = {}
@@ -20,9 +19,12 @@ function ListTeamsPicker:finder(results)
 		},
 	}
 	local make_display = function(entry)
+		local e = entry.entry
+		local hl_name = "Label" .. e.name:gsub("%s+", ""):gsub("-", "")
+		vim.cmd("highlight " .. hl_name .. " gui=bold guifg=" .. e.color)
 		return displayer {
-			{ entry.entry.id, "TelescopeResultsLineNr" },
-			entry.entry.name,
+			{ entry.entry.id,   "TelescopeResultsLineNr" },
+			{ entry.entry.name, hl_name },
 		}
 	end
 	return finders.new_table {
