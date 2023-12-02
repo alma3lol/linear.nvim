@@ -19,9 +19,12 @@ function ListProjectsPicker:finder(results)
 		},
 	}
 	local make_display = function(entry)
+		local e = entry.entry
+		local hl_name = "Project" .. e.name:gsub("%s+", ""):gsub("-", "")
+		vim.cmd("highlight " .. hl_name .. " gui=bold guifg=" .. e.color)
 		return displayer {
-			{ entry.entry.id, "TelescopeResultsLineNr" },
-			entry.entry.name,
+			{ entry.entry.id,   "TelescopeResultsLineNr" },
+			{ entry.entry.name, hl_name },
 		}
 	end
 	return finders.new_table {
