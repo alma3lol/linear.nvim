@@ -106,7 +106,7 @@ function ListStatesPicker:previewer()
 	}
 end
 
-function ListStatesPicker:attach_mappings(cb)
+function ListStatesPicker:attach_mappings(parent_cmd)
 	return function(prompt_bufnr, map)
 		map({ 'i', 'n' }, '<CR>', function()
 			actions.close(prompt_bufnr)
@@ -115,27 +115,27 @@ function ListStatesPicker:attach_mappings(cb)
 				filters.states.list:new()
 			else
 				-- TODO: SHOW UPDATE STATE PICKER
-				cb(selection.entry)
-				print(vim.inspect(selection))
+				if type(parent_cmd.args.callback) == "function" then
+					parent_cmd.args.callback(selection.entry)
+				end
 			end
 		end)
 		return true
 	end
 end
 
-function ListStatesPicker:picker(results, cb)
-	print(vim.inspect(cb))
+function ListStatesPicker:picker(results, parent_cmd)
 	return pickers.new({}, {
 		prompt_title = "States",
 		finder = ListStatesPicker:finder(results),
 		sorter = ListStatesPicker:sorter(),
 		previewer = ListStatesPicker:previewer(),
-		attach_mappings = ListStatesPicker:attach_mappings(cb),
+		attach_mappings = ListStatesPicker:attach_mappings(parent_cmd),
 	})
 end
 
-function ListStatesPicker:new(results, cb)
-	self:picker(results, cb):find()
+function ListStatesPicker:new(results, parent_cmd)
+	self:picker(results, parent_cmd):find()
 end
 
 return ListStatesPicker

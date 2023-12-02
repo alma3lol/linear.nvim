@@ -5,11 +5,11 @@ local pickers = require('linear.pickers')
 local Command = {}
 Command.__index = Command
 
-function Command:new(cmd, sub_cmd, cb)
+function Command:new(cmd, sub_cmd, args)
 	self = setmetatable({}, Command)
 	self.cmd = cmd
 	self.sub_cmd = sub_cmd
-	self.cb = cb
+	self.args = args or {}
 	self.id = nil
 	local texts = {
 		issues = {
@@ -100,15 +100,15 @@ function Command:success(data)
 		for _, entry in ipairs(data[self.cmd]) do
 			table.insert(results, entry)
 		end
-		pickers[self.cmd][self.sub_cmd]:new(results, self.cb)
+		pickers[self.cmd][self.sub_cmd]:new(results, self)
 	end
 end
 
 function Command:failed()
 	self.spinner:stop()
 	vim.notify(self.text, vim.log.levels.ERROR, { title = "Linear.nvim", replace = { id = self.id }, icon = "" })
-	if type(self.cb) == "function" then
-		self.cb()
+	if type(self.args.callback) == "function" then
+		self.args.callback()
 	end
 end
 

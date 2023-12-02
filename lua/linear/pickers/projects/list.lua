@@ -100,32 +100,32 @@ function ListProjectsPicker:previewer()
 	}
 end
 
-function ListProjectsPicker:attach_mappings(cb)
+function ListProjectsPicker:attach_mappings(parent_cmd)
 	return function(prompt_bufnr, map)
 		map({ 'i', 'n' }, '<CR>', function()
 			actions.close(prompt_bufnr)
 			local selection = action_state.get_selected_entry()
-			if type(cb) == "function" then
-				cb(selection.entry)
+			if type(parent_cmd.args.callback) == "function" then
+				parent_cmd.args.callback(selection.entry)
 			end
 		end)
 		return true
 	end
 end
 
-function ListProjectsPicker:picker(results, cb)
+function ListProjectsPicker:picker(results, parent_cmd)
 	print(vim.inspect(results))
 	return pickers.new({}, {
 		prompt_title = "Projects",
 		finder = ListProjectsPicker:finder(results),
 		sorter = ListProjectsPicker:sorter(),
 		previewer = ListProjectsPicker:previewer(),
-		attach_mappings = ListProjectsPicker:attach_mappings(cb),
+		attach_mappings = ListProjectsPicker:attach_mappings(parent_cmd),
 	})
 end
 
-function ListProjectsPicker:new(results, cb)
-	self:picker(results, cb):find()
+function ListProjectsPicker:new(results, parent_cmd)
+	self:picker(results, parent_cmd):find()
 end
 
 return ListProjectsPicker

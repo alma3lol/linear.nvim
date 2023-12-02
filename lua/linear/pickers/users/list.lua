@@ -78,32 +78,32 @@ function ListUsersPicker:previewer()
 	}
 end
 
-function ListUsersPicker:attach_mappings(cb)
+function ListUsersPicker:attach_mappings(parent_cmd)
 	return function(prompt_bufnr, map)
 		map({ 'i', 'n' }, '<CR>', function()
 			actions.close(prompt_bufnr)
 			local selection = action_state.get_selected_entry()
-			if type(cb) == "function" then
-				cb(selection.entry)
+			if type(parent_cmd.args.callback) == "function" then
+				parent_cmd.args.callback(selection.entry)
 			end
 		end)
 		return true
 	end
 end
 
-function ListUsersPicker:picker(results, cb)
+function ListUsersPicker:picker(results, parent_cmd)
 	print(vim.inspect(results))
 	return pickers.new({}, {
 		prompt_title = "Users",
 		finder = ListUsersPicker:finder(results),
 		sorter = ListUsersPicker:sorter(),
 		previewer = ListUsersPicker:previewer(),
-		attach_mappings = ListUsersPicker:attach_mappings(cb),
+		attach_mappings = ListUsersPicker:attach_mappings(parent_cmd),
 	})
 end
 
-function ListUsersPicker:new(results, cb)
-	self:picker(results, cb):find()
+function ListUsersPicker:new(results, parent_cmd)
+	self:picker(results, parent_cmd):find()
 end
 
 return ListUsersPicker

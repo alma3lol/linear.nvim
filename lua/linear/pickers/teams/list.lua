@@ -86,13 +86,13 @@ function ListTeamsPicker:previewer()
 	}
 end
 
-function ListTeamsPicker:attach_mappings(cb)
+function ListTeamsPicker:attach_mappings(parent_cmd)
 	return function(prompt_bufnr, map)
 		map({ 'i', 'n' }, '<CR>', function()
 			actions.close(prompt_bufnr)
 			local selection = action_state.get_selected_entry()
-			if type(cb) == "function" then
-				cb(selection.entry)
+			if type(parent_cmd.args.callback) == "function" then
+				parent_cmd.args.callback(selection.entry)
 			end
 			print(vim.inspect(selection))
 		end)
@@ -100,18 +100,18 @@ function ListTeamsPicker:attach_mappings(cb)
 	end
 end
 
-function ListTeamsPicker:picker(results, cb)
+function ListTeamsPicker:picker(results, parent_cmd)
 	return pickers.new({}, {
 		prompt_title = "Teams",
 		finder = ListTeamsPicker:finder(results),
 		sorter = ListTeamsPicker:sorter(),
 		previewer = ListTeamsPicker:previewer(),
-		attach_mappings = ListTeamsPicker:attach_mappings(cb),
+		attach_mappings = ListTeamsPicker:attach_mappings(parent_cmd),
 	})
 end
 
-function ListTeamsPicker:new(results, cb)
-	self:picker(results, cb):find()
+function ListTeamsPicker:new(results, parent_cmd)
+	self:picker(results, parent_cmd):find()
 end
 
 return ListTeamsPicker

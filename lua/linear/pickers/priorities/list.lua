@@ -74,32 +74,32 @@ function ListPrioritiesPicker:previewer()
 	}
 end
 
-function ListPrioritiesPicker:attach_mappings(cb)
+function ListPrioritiesPicker:attach_mappings(parent_cmd)
 	return function(prompt_bufnr, map)
 		map({ 'i', 'n' }, '<CR>', function()
 			actions.close(prompt_bufnr)
 			local selection = action_state.get_selected_entry()
 			-- TODO: SHOW UPDATE PRIORITY PICKER
-			if type(cb) == "function" then
-				cb(selection.entry)
+			if type(parent_cmd.args.callback) == "function" then
+				parent_cmd.args.callback(selection.entry)
 			end
 		end)
 		return true
 	end
 end
 
-function ListPrioritiesPicker:picker(results, cb)
+function ListPrioritiesPicker:picker(results, parent_cmd)
 	return pickers.new({}, {
 		prompt_title = "Priorities",
 		finder = ListPrioritiesPicker:finder(results),
 		sorter = ListPrioritiesPicker:sorter(),
 		previewer = ListPrioritiesPicker:previewer(),
-		attach_mappings = ListPrioritiesPicker:attach_mappings(cb),
+		attach_mappings = ListPrioritiesPicker:attach_mappings(parent_cmd),
 	})
 end
 
-function ListPrioritiesPicker:new(results, cb)
-	self:picker(results, cb):find()
+function ListPrioritiesPicker:new(results, parent_cmd)
+	self:picker(results, parent_cmd):find()
 end
 
 return ListPrioritiesPicker

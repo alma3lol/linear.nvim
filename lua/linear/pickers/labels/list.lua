@@ -96,7 +96,7 @@ function ListLabelsPicker:previewer()
 	}
 end
 
-function ListLabelsPicker:attach_mappings(cb)
+function ListLabelsPicker:attach_mappings(parent_cmd)
 	return function(prompt_bufnr, map)
 		map({ 'i', 'n' }, '<CR>', function()
 			local picker = action_state.get_current_picker(prompt_bufnr)
@@ -106,37 +106,37 @@ function ListLabelsPicker:attach_mappings(cb)
 			end
 			local selection = action_state.get_selected_entry()
 			actions.close(prompt_bufnr)
-			if type(cb) == "function" then
+			if type(parent_cmd.args.callback) == "function" then
 				if #selections > 0 then
-					cb(selections)
+					parent_cmd.args.callback(selections)
 				else
-					cb({ selection.entry })
+					parent_cmd.args.callback({ selection.entry })
 				end
 			end
 		end)
 		map({ 'i', 'n' }, '<s-cr>', function()
 			actions.close(prompt_bufnr)
-			if type(cb) == "function" then
-				cb({})
+			if type(parent_cmd.args.callback) == "function" then
+				parent_cmd.args.callback({})
 			end
 		end)
 		return true
 	end
 end
 
-function ListLabelsPicker:picker(results, cb)
+function ListLabelsPicker:picker(results, parent_cmd)
 	print(vim.inspect(results))
 	return pickers.new({}, {
 		prompt_title = "Labels",
 		finder = ListLabelsPicker:finder(results),
 		sorter = ListLabelsPicker:sorter(),
 		previewer = ListLabelsPicker:previewer(),
-		attach_mappings = ListLabelsPicker:attach_mappings(cb),
+		attach_mappings = ListLabelsPicker:attach_mappings(parent_cmd),
 	})
 end
 
-function ListLabelsPicker:new(results, cb)
-	self:picker(results, cb):find()
+function ListLabelsPicker:new(results, parent_cmd)
+	self:picker(results, parent_cmd):find()
 end
 
 return ListLabelsPicker
