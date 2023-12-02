@@ -20,41 +20,45 @@ The following is a list of which functionalities are ready:
 ### States (Status)
 
 -   [ ] Create
--   [ ] List
+-   [x] List
 -   [ ] Update
 -   [ ] Delete
 
 ### Labels
 
 -   [ ] Create
--   [ ] List
+-   [x] List
 -   [ ] Update
 -   [ ] Delete
 
 ### Priorities
 
--   [ ] List
+-   [x] List
 
 ### Projects
 
 -   [ ] Create
--   [ ] List
+-   [x] List
 -   [ ] Update
 -   [ ] Delete
 
 ### Milestones
 
 -   [ ] Create
--   [ ] List
+-   [x] List
 -   [ ] Update
 -   [ ] Delete
 
 ### Teams
 
 -   [ ] Create
--   [ ] List
+-   [x] List
 -   [ ] Update
 -   [ ] Delete
+
+### Users
+
+-   [x] List
 
 </details>
 
