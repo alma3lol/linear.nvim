@@ -12,7 +12,7 @@ The following is a list of which functionalities are ready:
 
 ### Issues
 
--   [ ] Create
+-   [x] Create
 -   [x] List
 -   [ ] Update
 -   [ ] Delete
