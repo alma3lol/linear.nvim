@@ -36,6 +36,12 @@ function Command:new(cmd, sub_cmd, cb)
 			update = "Updating a user..",
 			delete = "Deleting a user..",
 		},
+		projects = {
+			create = "Creating a project...",
+			list = "Fetching projects...",
+			update = "Updating a project..",
+			delete = "Deleting a project..",
+		},
 	}
 	self.text = texts[cmd][sub_cmd]
 	self.command = commands[cmd][sub_cmd]:new(self)
@@ -75,7 +81,7 @@ function Command:success(data)
 	if (data ~= nil and data[self.cmd] ~= nil) then
 		local results = {}
 		if self.sub_cmd == "list" then
-			if self.cmd ~= "teams" and self.cmd ~= "users" then
+			if self.cmd ~= "teams" and self.cmd ~= "users" and self.cmd ~= "projects" then
 				table.insert(results, { id = "FILTER", title = "Filter", name = "Filter" })
 			end
 		end

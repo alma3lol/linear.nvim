@@ -3,6 +3,7 @@ local M = {
 	states = require('linear.pickers.states'),
 	teams = require('linear.pickers.teams'),
 	users = require('linear.pickers.users'),
+	projects = require('linear.pickers.projects'),
 }
 
 return M

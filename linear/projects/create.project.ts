@@ -3,10 +3,10 @@ import { Command, Option } from "commander";
 import { checkApiKey, renderUser } from "..";
 
 export const createProject = new Command("create")
-	.requiredOption("-t, --teamIds <teamIds>", "Project teams")
-	.requiredOption("-n, --name <name>", "Project name")
+	.requiredOption("-t, --teamIds <teamIds>", "Project's teams")
+	.requiredOption("-n, --name <name>", "Project's name")
 	.addOption(
-		new Option("-s, --state <state>", "Project state")
+		new Option("-s, --state <state>", "Project's state")
 			.default("backlog")
 			.choices([
 				"backlog",
@@ -17,12 +17,12 @@ export const createProject = new Command("create")
 				"canceled",
 			])
 	)
-	.option("-c, --color <color>", "Project color")
-	.option("-d, --description <description>", "Project description")
-	.option("-l, --leadIds <leadId>", "Project leads (comma sperated)")
-	.option("-m, --memberIds <memberId>", "Project members (comma sperated)")
-	.option("--startDate <startDate>", "Project start date")
-	.option("--targetDate <targetDate>", "Project target date")
+	.option("-c, --color <color>", "Project's color")
+	.option("-d, --description <description>", "Project's description")
+	.option("-l, --leadIds <leadId>", "Project's leads (comma sperated)")
+	.option("-m, --memberIds <memberId>", "Project's members (comma sperated)")
+	.option("--startDate <startDate>", "Project's start date")
+	.option("--targetDate <targetDate>", "Project's target date")
 	.description("Create an project")
 	.action(async (options, cmd: Command) => {
 		if (cmd.parent === null) return;
