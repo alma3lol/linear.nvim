@@ -64,6 +64,7 @@ M.setup = function(options)
 			table.insert(cmd, part)
 		end
 		Job:new({
+			cwd = options.cwd,
 			command = cmd[1],
 			args = vim.list_slice(cmd, 2, #cmd),
 			on_exit = function(j, result)
@@ -74,8 +75,8 @@ M.setup = function(options)
 			end
 		}):start()
 	end
-	M.options.cwd = vim.fn.getcwd()
-	print(vim.fn.getcwd())
+	local dir = vim.fn.fnamemodify(vim.fn.fnamemodify(debug.getinfo(1).source:sub(2), ":p:h"), ":p")
+	M.options.cwd = dir
 end
 
 M.command = function(opts)

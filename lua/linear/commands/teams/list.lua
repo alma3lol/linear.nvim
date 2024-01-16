@@ -16,6 +16,7 @@ function ListTeamsCommand:run()
   end
   local args = { '-s', 'linear', 'teams', '--api-key', options.api_key, '--json', 'list' }
   Job:new({
+    cwd = options.cwd,
     command = 'yarn',
     args = args,
     on_exit = vim.schedule_wrap(function(j, return_val)

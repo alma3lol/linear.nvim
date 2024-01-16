@@ -30,6 +30,7 @@ function ListIssuesCommand:run()
     end
   end
   Job:new({
+    cwd = options.cwd,
     command = 'yarn',
     args = args,
     on_exit = vim.schedule_wrap(function(j, return_val)
@@ -37,6 +38,8 @@ function ListIssuesCommand:run()
         local issues = vim.json.decode(table.concat(j:result(), ""))
         self.parent_cmd:success(issues)
       else
+        -- print(vim.inspect(j))
+        print(vim.inspect(j:stderr_result()))
         self.parent_cmd.text = "Failed to fetch issues"
         self.parent_cmd:failed()
       end

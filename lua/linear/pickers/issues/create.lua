@@ -373,6 +373,7 @@ function CreateIssuePicker:attach_mappings(parent_cmd)
 			actions.close(prompt_bufnr)
 			parent_cmd:show_spinner()
 			Job:new({
+				cwd = options.cwd,
 				command = 'yarn',
 				args = args,
 				on_exit = vim.schedule_wrap(function(j, return_val)

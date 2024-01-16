@@ -20,6 +20,7 @@ function ListMilestonesCommand:run()
     table.insert(args, self.parent_cmd.args.filtering_entry.id)
   end
   Job:new({
+    cwd = options.cwd,
     command = 'yarn',
     args = args,
     on_exit = vim.schedule_wrap(function(j, return_val)

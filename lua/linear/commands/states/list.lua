@@ -30,6 +30,7 @@ function ListStatesCommand:run()
     end
   end
   Job:new({
+    cwd = options.cwd,
     command = 'yarn',
     args = args,
     on_exit = vim.schedule_wrap(function(j, return_val)
